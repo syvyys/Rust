@@ -52,7 +52,9 @@ impl<T: Default + Sized> Default for Rectangle<T> {
     }
 }
 
-impl<T: Default + Debug + Copy + Ord + Add<Output = T> + Sub<Output = T> + Div<Output = T>> Rect<T> for Rectangle<T> {
+impl<T: Default + Debug + Copy + Ord> Rect<T> for Rectangle<T>
+    where T: Add<Output = T> + Sub<Output = T> + Div<Output = T> + From<i32>
+{
     fn new(x: T, y: T, width: T, height: T) -> Self {
         return Rectangle { x, y, width, height };
     }
@@ -125,11 +127,10 @@ impl<T: Default + Debug + Copy + Ord + Add<Output = T> + Sub<Output = T> + Div<O
     }
 
     fn center(&self) -> Point<T> {
-        todo!()
-        // return Point {
-        //     x: self.x + self.width / 2,
-        //     y: self.y + self.height / 2
-        // };
+        return Point {
+            x: self.x + self.width / T::from(2),
+            y: self.y + self.height / T::from(2)
+        };
     }
 
     fn contains_point(&self, point: &Point<T>) -> bool {
@@ -301,6 +302,18 @@ fn test_operations() {
                Rectangle {x: 10, y: 20, width: 80, height: 70}); // half inside
     assert_eq!(rect.united(&Rectangle {x: 100, y: 20, width: 50, height: 50}),
                Rectangle {x: 10, y: 20, width: 140, height: 50}); // fully outside
+}
+
+#[test]
+fn test_center() {
+    assert_eq!(Rectangle::new(0, 0, 50, 40).center(),
+               Point{ x: 25, y: 20 });
+    assert_eq!(Rectangle::new(0, 100, 200, 100).center(),
+               Point{ x: 100, y: 150 });
+    assert_eq!(Rectangle::new(-100, -50, 50, 10).center(),
+               Point{ x: -75, y: -45 });
+    assert_eq!(Rectangle::new(0, 0, 0, 0).center(),
+               Point{ x: 0, y: 0 });
 }
 
 fn main() {
