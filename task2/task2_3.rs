@@ -262,15 +262,15 @@ fn test_intersections() {
                true); // same side
 
     assert_eq!(rect.is_intersected(&Rectangle {x: 30, y: 30, width: 10, height: 10}),
-               false); // fully inside
-    assert_eq!(rect.is_intersected(&Rectangle {x: 500, y: 20, width: 10, height: 10}),
+               true); // fully inside
+    assert_eq!(rect.is_intersected(&Rectangle {x: 500, y: 200, width: 10, height: 10}),
                false); // fully outside
     assert_eq!(rect.is_intersected(&Rectangle {x: 30, y: 30, width: 100, height: 100}),
                true); // half inside
     assert_eq!(rect.is_intersected(&Rectangle {x: 0, y: 10, width: 60, height: 50}),
-               false); // same
+               true); // same
     assert_eq!(rect.is_intersected(&Rectangle {x: 0, y: 10, width: 60, height: 10}),
-               false); // same side inside
+               true); // same side inside
     assert_eq!(rect.is_intersected(&Rectangle {x: 60, y: 10, width: 10, height: 10}),
                true); // same side inside
 }

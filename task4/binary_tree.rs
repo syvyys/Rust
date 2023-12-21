@@ -1,4 +1,5 @@
-use std::fmt::{Debug};
+use std::str::FromStr;
+use std::fmt::{Debug, Display, Formatter};
 
 pub struct TreeNode<T> {
     pub value: T,
@@ -14,9 +15,9 @@ pub enum BinaryTree<T> {
 impl<T: PartialOrd + Copy + Debug> BinaryTree<T> {
     pub fn add(&mut self, value: T) {
         if let BinaryTree::NonEmpty(node) = self {
-            if value < node.value {
+            if value <= node.value {
                 node.left.add(value);
-            } else if value > node.value {
+            } else {
                 node.right.add(value);
             }
         } else {
@@ -54,5 +55,48 @@ impl<T: Copy + PartialOrd + Debug> Clone for BinaryTree<T> {
             }
         }
         return res;
+    }
+}
+
+impl<T: Ord + Copy + Debug + FromStr> FromStr for BinaryTree<T> {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut tree = BinaryTree::Empty;
+        for str in s.split_whitespace() {
+            let value = T::from_str(str);
+            match value {
+                Ok(value) =>  {
+                    tree.add(value);
+                }
+                Err(_) => {
+                    return Err(String::from("Error"));
+                }
+            }
+        }
+        return Ok(tree);
+    }
+}
+
+impl<T: Ord + Copy + Debug + Display> Display for TreeNode<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        self.left.fmt(f).expect("Error");
+        self.right.fmt(f).expect("Error");
+        return write!(f, "{:?}", self.value);
+    }
+}
+
+impl<T: Ord + Copy + Debug + Display> Display for BinaryTree<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BinaryTree::Empty =>  {
+                write!(f, "")
+            }
+            BinaryTree::NonEmpty(node) => {
+                node.left.fmt(f).expect("Error");
+                node.right.fmt(f).expect("Error");
+                return write!(f, "{:?} ", node.value);
+            }
+        }
     }
 }

@@ -1,64 +1,35 @@
 use std::str::FromStr;
 use std::fmt::{Debug, Display, Formatter};
 
-struct TreeNode<T> {
-    value: T,
-    left: BinaryTree<T>,
-    right: BinaryTree<T>
+pub struct TreeNode<T> {
+    pub value: T,
+    pub left: BinaryTree<T>,
+    pub right: BinaryTree<T>
 }
 
-enum BinaryTree<T> {
+pub enum BinaryTree<T> {
     Empty,
     NonEmpty(Box<TreeNode<T>>)
 }
 
-impl<T: Ord + Copy + Debug> TreeNode<T> {
-    fn add(&mut self, value: T) {
-        if self.value == value {
-            return;
-        }
-
-        let next_node = self.next(value);
-        match next_node {
-            BinaryTree::Empty => {
-                *next_node = BinaryTree::<T>::create_leaf(value);
+impl<T: PartialOrd + Copy + Debug> BinaryTree<T> {
+    pub fn add(&mut self, value: T) {
+        if let BinaryTree::NonEmpty(node) = self {
+            if value <= node.value {
+                node.left.add(value);
+            } else {
+                node.right.add(value);
             }
-            BinaryTree::NonEmpty(node) => {
-                node.add(value);
-            }
+        } else {
+            *self = BinaryTree::<T>::create_leaf(value);
         }
     }
 
-    fn print(&self) {
-        println!("{:?}", self.value);
-        self.left.print();
-        self.right.print();
-    }
-
-    fn next(&mut self, value: T) -> &mut BinaryTree<T> {
-        if value < self.value {
-            return &mut self.left;
-        }
-        return &mut self.right;
-    }
-}
-
-impl<T: Ord + Copy + Debug> BinaryTree<T> {
-    fn add(&mut self, value: T) {
-        match self {
-            BinaryTree::Empty => {
-                *self = BinaryTree::<T>::create_leaf(value);
-            }
-            BinaryTree::NonEmpty(tree) => {
-                tree.add(value);
-            }
-        }
-    }
-
-    fn print(&self) {
-        match self {
-            BinaryTree::Empty => return,
-            BinaryTree::NonEmpty(tree) => tree.print()
+    pub fn print(&self) {
+        if let BinaryTree::NonEmpty(node) = self {
+            println!("{:?}", node.value);
+            node.left.print();
+            node.right.print();
         }
     }
 
@@ -69,6 +40,21 @@ impl<T: Ord + Copy + Debug> BinaryTree<T> {
             right: BinaryTree::Empty
         };
         return BinaryTree::NonEmpty(Box::new(node));
+    }
+}
+
+impl<T: Copy + PartialOrd + Debug> Clone for BinaryTree<T> {
+    fn clone(&self) -> Self {
+        let mut res = BinaryTree::Empty;
+        let mut stack = vec![self];
+        while let Some(tree) = stack.pop() {
+            if let BinaryTree::NonEmpty(node) = tree {
+                res.add(node.value);
+                stack.push(&node.right);
+                stack.push(&node.left);
+            }
+        }
+        return res;
     }
 }
 

@@ -9,7 +9,9 @@ fn bubble_sort<T: Copy>(arr: &mut[T], comp: fn(&T, &T) -> bool) -> &mut[T] {
     for i in 0..len {
         for j in 0..len - i - 1 {
             if comp(&arr[j], &arr[j + 1]) {
-                (arr[j], arr[j + 1]) = (arr[j + 1], arr[j]);
+                let temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
             }
         }
     }

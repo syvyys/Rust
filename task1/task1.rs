@@ -28,6 +28,10 @@ fn sort_test() {
 
 // task 2
 fn is_power_of_two(num: i32) -> bool {
+    if num < 0 {
+        return false;
+    }
+
     let mut num_ones: i32 = 0;
     for i in 0..32 {
         num_ones += (num >> i) & 1;
@@ -43,8 +47,10 @@ fn power_test() {
     let base: i32 = 2;
     assert_eq!(is_power_of_two(0), false);
     assert_eq!(is_power_of_two(3), false);
+    assert_eq!(is_power_of_two(-2), false);
     assert_eq!(is_power_of_two(456), false);
     assert_eq!(is_power_of_two(2222), false);
+    assert_eq!(is_power_of_two(-2147483648), false);
 
     assert_eq!(is_power_of_two(base.pow(0)), true);
     assert_eq!(is_power_of_two(base.pow(1)), true);

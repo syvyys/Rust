@@ -1,6 +1,7 @@
 pub mod binary_tree;
 
 use std::fmt::Debug;
+use std::str::FromStr;
 use crate::binary_tree::{BinaryTree};
 
 // ----------- ITERATOR ------------
@@ -109,6 +110,32 @@ impl<'a, T> Iterator for MutRefBinaryTreeIterator<'a, T> {
 
 // ----------- TESTS ------------
 
+fn tree_to_vec<T: Copy>(tree: &BinaryTree<T>) -> Vec<T> {
+    let mut vec: Vec<T> = vec![];
+    for elem in tree {
+        vec.push(*elem);
+    }
+    return vec;
+}
+
+#[test]
+fn test0() {
+    let tree = BinaryTree::<i32>::from_str("1 2 3 10").unwrap();
+    assert_eq!(tree_to_vec(&tree), vec![1, 2, 3, 10]);
+
+    let tree = BinaryTree::<i32>::from_str("1 1 1 3 10").unwrap();
+    assert_eq!(tree_to_vec(&tree), vec![1, 1, 1, 3, 10]);
+
+    match BinaryTree::<i32>::from_str("1 1 A 1 3 10") {
+        Ok(_) => {
+            assert!(false);
+        },
+        Err(error) => {
+            assert_eq!(error, "Error");
+        }
+    }
+}
+
 #[test]
 fn test1() {
     let mut tree = BinaryTree::Empty;
@@ -142,9 +169,9 @@ fn test2() {
     let vec = vec![1, 1, 1, 2, 2, 8, -5];
     assert_eq!(BinaryTreeIterator::from_iter(vec.clone()).max(), Some(8));
     assert_eq!(BinaryTreeIterator::from_iter(vec.clone()).min(), Some(-5));
-    assert_eq!(BinaryTreeIterator::from_iter(vec.clone()).sum::<i32>(), 8);
-    assert_eq!(BinaryTreeIterator::from_iter(vec.clone()).product::<i32>(), 80);
-    assert_eq!(BinaryTreeIterator::from_iter(vec.clone()).count(), 4);
+    assert_eq!(BinaryTreeIterator::from_iter(vec.clone()).sum::<i32>(), 10);
+    assert_eq!(BinaryTreeIterator::from_iter(vec.clone()).product::<i32>(), -160);
+    assert_eq!(BinaryTreeIterator::from_iter(vec.clone()).count(), 7);
 }
 
 #[test]
@@ -206,11 +233,16 @@ fn test5() {
 fn main() {
     // create and fill tree
     let mut tree = BinaryTree::Empty;
+    tree.add(10);
+    tree.add(50);
     tree.add(0);
-    tree.add(-10);
-    tree.add(-12);
-    tree.add(-9);
-    tree.add(1);
+    tree.add(25);
 
+    // print tree
     tree.print();
+    println!("{}", tree);
+
+    // create tree from str
+    let tree = BinaryTree::<i32>::from_str("1 2 3 10").unwrap();
+    println!("{}", tree);
 }
